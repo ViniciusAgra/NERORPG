@@ -49,8 +49,8 @@ function subirTituloEExibirTexto() {
         const descricao = document.getElementById("descricao");
         descricao.classList.add("visible");
 
-        const textoDescricao = `Sobre da Corp. NERO:
-
+        const textoDescricao = `
+        
 Fundada em 451 E.C, a Neyt Eter Rognus Opomun (Novo Caminho do Destino Universal), mais conhecida como N.E.R.O., é uma instituição de segurança interdimensional dedicada à proteção e manutenção da ordem no Plano Terreno.
 
 Desde sua fundação, Adam Zephyros enxergou na corporação um imenso potencial para zelar pela paz. No entanto, após sua morte em 1128 E.C, a N.E.R.O. expandiu seus objetivos, passando a atuar não apenas na segurança pública e privada, mas também no avanço tecnológico humano, sempre em equilíbrio com o desenvolvimento e a cooperação entre as demais raças que habitam o Plano Terreno.

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.E.R.O.</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <script defer src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+</head>
+<body>
+    <div id="scroll-container">
+        <header>
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <img src="{{ url_for('static', filename='img/menuiconnero.png') }}" alt="Menu">
+            </button>
+            <nav>
+                <ul>
+                    <li class="linha">|</li>
+                    <li><a href="{{ url_for('sobrebasic') }}">Sobre</a></li>
+                    <li class="linha">|</li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <h1>N.E.R.O.</h1>
+            <div class="background-overlay"></div>
+            <div id="descricao"></div>
+
+            <div id="login-form" class="hidden">
+                <h2>Bem Vindo</h2>
+                <form id="loginForm" action="{{ url_for('login') }}" method="POST" autocomplete="off">
+                    <input type="text" name="identificador" placeholder="Identificação" autocomplete="off" required>
+                    <input type="password" name="senha" placeholder="Senha" autocomplete="off" required>
+                    <button type="submit">Entrar</button>
+                </form>
+                <div id="login-error" class="login-error-message hidden"></div>
+                <audio id="easteregg-audio" src="{{ url_for('static', filename='audio/SegurançaNERO.mp3') }}"></audio>
+                <audio id="boas-vindas" src="{{ url_for('static', filename='audio/BemVindoNERO.mp3') }}" preload="auto"></audio>
+            </div>
+        </main>
+    </div>
+    <div class="scroll-hover-zone"></div>
+</body>
+</html>
