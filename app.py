@@ -17,28 +17,28 @@ def index():
     return render_template('index.html')
 
 @app.route('/sobre')
-def sobre():
-    return render_template('sobre.html')
-
-@app.route('/sobreoff')
 def sobrebasic():
     return render_template('sobrebasic.html')
-
-@app.route('/identificacao')
-def identificacao():
-    return render_template('identificacao.html')
-
-@app.route('/atribuicoes')
-def atribuicoes():
-    return render_template('atribuicoes.html')
-
-@app.route('/perfil')
-def perfil():
-    return render_template('perfil.html')
 
 @app.route('/inicio')
 def inicio():
     return render_template('inicio.html')
+
+@app.route('/inicio/sobre')
+def sobre():
+    return render_template('sobre.html')
+
+@app.route('/inicio/identificacao')
+def identificacao():
+    return render_template('identificacao.html')
+
+@app.route('/inicio/atribuicoes')
+def atribuicoes():
+    return render_template('atribuicoes.html')
+
+@app.route('/inicio/perfil')
+def perfil():
+    return render_template('perfil.html')
 
 @app.route('/login', methods=['POST'])
 def login():
