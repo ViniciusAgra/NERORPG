@@ -2,10 +2,35 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Início</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.E.R.O | {{nome}}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/inicio.css') }}">
+    <script defer src="{{ url_for('static', filename='scripts/inicio.js') }}"></script>
 </head>
 <body>
-    <h1>Bem-vindo ao sistema N.E.R.O.</h1>
-    <p>Login realizado com sucesso!</p>
+    <header>
+        <button class="menu-toggle" onclick="toggleMenu()">
+            <img src="{{ url_for('static', filename='img/menuiconnero.png') }}" alt="Menu">
+        </button>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                <li class="linha">|</li>
+                <li><a href="{{ url_for('identificacao') }}">Identificação</a></li>
+                <li class="linha">|</li>
+                <li><a href="{{ url_for('atribuicoes') }}">Atribuições</a></li>
+            </ul>
+        </nav>
+        <a href="{{ url_for('perfil') }}">
+            <img src="{{ url_for('static', filename='img/usericon.png') }}" alt="Perfil" class="user-icon">
+        </a>
+    </header>
+    <main>
+        <div class="background-overlay"></div>
+        <h1>
+            <span class="linha1">Bem Vindo Agente</span><br>
+            <span class="linha2">{{nome}}</span>
+        </h1>
+    </main>
 </body>
 </html>

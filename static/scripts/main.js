@@ -2,7 +2,8 @@ function toggleMenu() {
     const nav = document.querySelector('nav ul');
     nav.classList.toggle('active');
 }
-//Lida Com A Animação De Digitar Da NERO
+
+// Lida com a animação de digitar N.E.R.O.
 document.addEventListener("DOMContentLoaded", () => {
     const titulo = document.querySelector("h1");
     const texto = " N.E.R.O.";
@@ -38,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Espera o primeiro clique do usuário para iniciar animação e som
+// Espera o primeiro clique do usuário para iniciar a animação
 function esperarCliqueParaAnimar() {
     const iniciar = () => {
         subirTituloEExibirTexto();
@@ -47,13 +48,13 @@ function esperarCliqueParaAnimar() {
 
     document.addEventListener("click", iniciar);
 }
-// Lida Com A Animação De Subir E A Render Do Formulario
+
+// Animação do título subindo e exibição do formulário
 function subirTituloEExibirTexto() {
     const titulo = document.querySelector("h1");
     titulo.style.transform = "translateY(-100px)";
     titulo.style.opacity = "0";
 
-    // Tocar o áudio de boas-vindas
     const audio = document.getElementById("boas-vindas");
     if (audio) {
         audio.play().catch(err => {
@@ -62,15 +63,22 @@ function subirTituloEExibirTexto() {
     }
 
     setTimeout(() => {
-        const loginForm = document.getElementById("login-form");
-        loginForm.classList.remove("hidden");
+        const loginFormContainer = document.getElementById("login-form");
+        loginFormContainer.classList.remove("hidden");
+
         requestAnimationFrame(() => {
-            loginForm.classList.add("visible");
+            loginFormContainer.classList.add("visible");
+
+            // Habilita o botão somente após o formulário aparecer
+            const loginButton = loginFormContainer.querySelector("button[type='submit']");
+            if (loginButton) {
+                loginButton.disabled = false;
+            }
         });
     }, 1000);
 }
 
-// Lida com login e Easter Egg
+// Lida com o envio do formulário e Easter Egg
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
@@ -107,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-//Lida com o AutoComplete
+// Desativa sugestão de preenchimento automático até o usuário começar a digitar
 document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('#loginForm input');
 
@@ -119,4 +127,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-

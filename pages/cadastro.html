@@ -1,38 +1,97 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Cadastro - N.E.R.O.</title>
+  <meta charset="UTF-8">
+  <title>Cadastro de Usuários</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/cadastro.css') }}">
+  <script src="{{ url_for('static', filename='scripts/cadastro.js') }}" defer></script>
 </head>
 <body>
-    <h1>Cadastro de Agente</h1>
+  <h1>Painel de Gerenciamento de Usuários</h1>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for msg in messages %}
-          <li style="color: red;">{{ msg }}</li>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul style="color: red;">
+        {% for message in messages %}
+          <li>{{ message }}</li>
         {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+      </ul>
+    {% endif %}
+  {% endwith %}
 
-    <form method="POST">
-        <label>Identificador:</label><br>
-        <input type="text" name="identificador" required><br><br>
-
-        <label>Nome:</label><br>
-        <input type="text" name="nome" required><br><br>
-
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
-
-        <label>Senha:</label><br>
-        <input type="password" name="senha" required><br><br>
-
+  <div class="painel">
+    <!-- Formulário de Cadastro -->
+    <div>
+      <h2>Cadastrar Novo Usuário</h2>
+      <form method="POST" action="{{ url_for('cadastro') }}">
+        <label>
+          Identificador:
+          <input type="text" name="identificador" required>
+        </label>
+        <label>
+          Nome:
+          <input type="text" name="nome" required>
+        </label>
+        <label>
+          E-mail:
+          <input type="email" name="email" required>
+        </label>
+        <label>
+          Senha:
+          <input type="password" name="senha" required>
+        </label>
+        <label>
+          Patente:
+          <select name="patente" required>
+            {% for patente in patentes %}
+              <option value="{{ patente.nome }}">{{ patente.nome }}</option>
+            {% endfor %}
+          </select>
+        </label>
         <button type="submit">Cadastrar</button>
-    </form>
+      </form>
+    </div>
 
-    <p><a href="{{ url_for('index') }}">Voltar para o início</a></p>
+    <!-- Formulário de Edição -->
+    <div>
+      <h2>Editar / Excluir Usuário</h2>
+
+      <label>
+        Identificador para buscar:
+        <input type="text" id="buscar_identificador">
+      </label>
+      <button onclick="buscarUsuario()">Buscar</button>
+
+      <form id="editar_form" style="display:none;" onsubmit="editarUsuario(event)">
+        <input type="hidden" id="edit_identificador">
+
+        <label>
+          Nome:
+          <input type="text" id="edit_nome" required>
+        </label>
+        <label>
+          E-mail:
+          <input type="email" id="edit_email" required>
+        </label>
+        <label>
+          Senha:
+          <input type="password" id="edit_senha" required>
+        </label>
+        <label>
+          Patente:
+          <select id="edit_patente" required>
+            {% for patente in patentes %}
+              <option value="{{ patente.nome }}">{{ patente.nome }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <button type="submit">Salvar Alterações</button>
+        <button type="button" onclick="excluirUsuario()">Excluir Usuário</button>
+      </form>
+      <button type="button" onclick="gerarRelatorio()">Gerar Relatório de Usuários</button>
+    </div>
+  </div>
+
 </body>
 </html>

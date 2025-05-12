@@ -1,0 +1,15 @@
+Código - Nome Do Erro - Explicação Do Erro - Resolução
+
+401 - Acesso Negado - Necessário Login para Acessar - Logar.
+
+403 - Proibido - Você não tem permissão para acessar essa área - Solicitar acesso ao administrador ou voltar para uma área permitida.
+
+404 - Página Não Encontrada - Essa página não tem um caminho linkado no sistema - Corrigir o URL digitado ou notificar um administrador caso encontre esse erro ao acessar uma área da página.
+
+408 - Tempo Esgotado - O tempo limite para resposta do servidor expirou - Recarregar a página ou tentar novamente mais tarde.
+
+429 - Muitas Requisições - Tentativa de ataque identificado ou você enviou muitas solicitações ao sistema- Se você obviamente n estiver rodando um script com o objetivo de derrubar o sistema, apenas aguarde um tempo antes de enviar outra solicitação.
+
+500 - Erro Interno no Servidor - Ocorreu uma falha inesperada nos sistemas da N.E.R.O - Tentar novamente mais tarde ou relatar o erro à central de ajuda.
+
+503 - Serviço Indisponível - Sistemas da N.E.R.O fora do ar temporariamente - Tentar novamente mais tarde.

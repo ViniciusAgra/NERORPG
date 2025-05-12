@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>N.E.R.O. | Erro 401</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/erros.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>ACESSO NEGADO</h1>
+        <p>Você precisa estar autenticado como um agente para acessar esta seção do sistema N.E.R.O.</p>
+        <a href="{{ url_for('index') }}" class="btn-voltar">Voltar para o Login</a>
+    </div>
+</body>
+</html>
