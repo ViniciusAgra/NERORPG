@@ -61,7 +61,8 @@ def sobrebasic():
 @login_required
 def inicio():
     nome = session.get('nome')
-    return render_template('inicio.html', nome=nome)
+    tocar_audio = session.pop('tocar_audio', False)
+    return render_template('inicio.html', nome=nome, tocar_audio=tocar_audio)
 
 @app.route('/inicio/sobre')
 @login_required
@@ -96,7 +97,9 @@ def login():
     if user:
         session['usuario_id'] = user['identificador']
         session['nome'] = user['nome']
+        session['email'] = user['email']
         session['patente'] = user['patente']
+        session['tocar_audio'] = True
         return jsonify(success=True)
     else:
         return jsonify(success=False, message='Agente não localizado no sistema.')
@@ -194,18 +197,19 @@ def excluir_usuario_ajax(identificador):
 def gerar_relatorio_usuarios():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT identificador, nome, email, patente FROM users ORDER BY nome ASC')
+    cursor.execute('SELECT identificador, nome, email, patente, senha FROM users ORDER BY nome ASC')
     usuarios = cursor.fetchall()
     conn.close()
 
-    # Dados da tabela
-    data = [["Identificador", "Nome", "Email", "Patente"]]
+    # Cabeçalho da tabela
+    data = [["Identificador", "Nome", "Email", "Patente", "Senha"]]
     for user in usuarios:
         data.append([
             user["identificador"],
             user["nome"],
             user["email"],
-            user["patente"]
+            user["patente"],
+            user["senha"]
         ])
 
     # Criar o PDF em memória
@@ -213,15 +217,16 @@ def gerar_relatorio_usuarios():
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     tabela = Table(data)
 
-    # Estilizar a tabela
+    # Estilo temático escuro
     style = TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.gray),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#101010")),  # Cabeçalho preto
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#00FFFF")),  # Texto ciano no cabeçalho
         ("ALIGN", (0, 0), (-1, -1), "CENTER"),
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
         ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-        ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#1e1e1e")),  # Fundo linhas
+        ("TEXTCOLOR", (0, 1), (-1, -1), colors.whitesmoke),           # Texto linhas
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#00FFFF")),  # Linhas ciano
     ])
     tabela.setStyle(style)
 
