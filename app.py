@@ -240,6 +240,15 @@ def gerar_relatorio_usuarios():
         download_name="Relatório Agentes NERO.pdf"
     )
 
+@app.route('/inicio/secret')
+@login_required
+def secret():
+    return render_template('secret.html')
+
+@app.route('/secret')
+def secret():
+    return render_template('secret.html')
+
 # ROTAS DE ERROS PERSONALIZADAS
 @app.route('/erro_401')
 def erro_401():
