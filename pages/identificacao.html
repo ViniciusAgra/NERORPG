@@ -28,6 +28,16 @@
 
     <main>
         <div class="background-overlay"></div>
+        <div id="popup" class="popup hidden">
+        <div class="popup-content">
+                <span class="close-btn" onclick="fecharPopup()">&times;</span>
+                <h2>Documento Encontrado</h2>
+                <p><strong>Agente Responsavel:</strong> <span id="usuarioNome"></span></p>
+                <p><strong>Nome do Arquivo:</strong> <span id="nomeOriginal"></span></p>
+                <div id="previewArea" class="preview-area"></div>
+                <a id="downloadLink" href="#" download class="btn-download">Baixar Arquivo</a>
+            </div>
+        </div>
         <div class="search-container">
             <h1>Consulta Geral Do Sistema</h1>
             <input type="text" id="searchInput" placeholder="Digite o Código de Dados">

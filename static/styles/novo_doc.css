@@ -62,25 +62,16 @@ input[type="checkbox"] {
 
 button {
     padding: 10px 20px;
-    background-color: #00ffcc;
+    background-color:#3d3d3d;
+    color: #ecf0f1;
     border: none;
     border-radius: 6px;
-    color: #000;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #00e6b8;
-}
-
-p {
-    margin-top: 20px;
-    background-color: #1abc9c;
-    padding: 10px;
-    border-radius: 8px;
-    color: #000;
-    text-align: center;
-    font-weight: bold;
+    background-color: #ffffff;
+    color: #000000
 }
