@@ -1,3 +1,5 @@
+#IMPORTAÇÕES
+
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, abort, send_file
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
@@ -12,16 +14,25 @@ import random
 import string
 from datetime import datetime
 
+
+
+
+#CONFIGURAÇÕES
+
 app = Flask(
     __name__, 
     static_folder='static', 
     template_folder='pages',
 )
 app.secret_key = os.urandom(24)
-
 DB_PATH = os.path.join('data', 'main.db')
 # Limite de upload de arquivos para 1GB
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 1 GB
+
+
+
+
+#FUNÇÕES GERAIS
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -60,26 +71,6 @@ def patente_minima(nivel_minimo):
         return decorated_function
     return decorator
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/sobre')
-def sobrebasic():
-    return render_template('sobrebasic.html')
-
-@app.route('/inicio')
-@login_required
-def inicio():
-    nome = session.get('nome')
-    tocar_audio = session.pop('tocar_audio', False)
-    return render_template('inicio.html', nome=nome, tocar_audio=tocar_audio)
-
-@app.route('/inicio/sobre')
-@login_required
-def sobre():
-    return render_template('sobre.html')
-
 def gerar_codigo_unico():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -93,11 +84,71 @@ def gerar_codigo_unico():
             conn.close()
             return codigo
 
+
+
+
+#ROTAS DESPROTEGIDAS
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/sobre')
+def sobrebasic():
+    return render_template('sobrebasic.html')
+
+
+
+
+#ROTAS INICIAIS
+
+@app.route('/inicio')
+@login_required
+def inicio():
+    nome = session.get('nome')
+    tocar_audio = session.pop('tocar_audio', False)
+    return render_template('inicio.html', nome=nome, tocar_audio=tocar_audio)
+
+@app.route('/inicio/sobre')
+@login_required
+def sobre():
+    return render_template('sobre.html')
+
+
+
+
+
+#ROTAS DE CONSULTA
+
 @app.route('/inicio/identificacao')
 @login_required
 def identificacao():
     patente = session.get("patente", "")
     return render_template("identificacao.html", patente=patente)
+
+@app.route('/consulta/<codigo>')
+@login_required
+def consultar_documento(codigo):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        SELECT uploads.nome_original, uploads.nome_armazenado, uploads.caminho, uploads.uuid, 
+               users.nome AS nome_usuario,
+               consultas.confidencial
+        FROM consultas
+        JOIN uploads ON consultas.link_arquivo = uploads.uuid
+        JOIN users ON uploads.user_id = users.identificador
+        WHERE consultas.codigo_de_consulta = ?
+    ''', (codigo,))
+    
+    resultado = cursor.fetchone()
+    conn.close()
+
+    if resultado:
+        return jsonify(dict(resultado))
+    else:
+        return jsonify({'erro': 'Código de consulta não encontrado.'}), 404
 
 @app.route('/inicio/identificacao/novo_ser')
 @login_required
@@ -125,7 +176,7 @@ def novodoc():
             nome_armazenado = f"{uuid_arquivo}_{filename}"
             
             # Definir pasta destino e caminho completo
-            pasta_destino = os.path.join(app.instance_path, 'uploads', 'documentos')
+            pasta_destino = os.path.join(app.static_folder, 'uploads', 'documentos')
             os.makedirs(pasta_destino, exist_ok=True)
             caminho_completo = os.path.join(pasta_destino, nome_armazenado)
 
@@ -173,15 +224,30 @@ def novodoc():
 
     return render_template('novo_doc.html')
 
+
+
+
+#ROTAS DAS FICHAS
+
 @app.route('/inicio/atribuicoes')
 @login_required
 def atribuicoes():
     return render_template('atribuicoes.html')
 
+
+
+
+#ROTAS DO PERFIL
+
 @app.route('/inicio/perfil')
 @login_required
 def perfil():
     return render_template('perfil.html')
+
+
+
+
+#ROTAS DE LOGIN
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -207,6 +273,11 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
+
+
+# GERENCIAMENTO DE CADASTROS #
 
 @app.route('/inicio/cadastro', methods=['GET', 'POST'])
 @login_required
@@ -343,7 +414,11 @@ def gerar_relatorio_usuarios():
 def secret():
     return render_template('secret.html')
 
-# ROTAS DE ERROS PERSONALIZADAS
+
+
+
+# GERENCIAMNTO DE ERROS
+
 @app.route('/erro_401')
 def erro_401():
     return render_template('erro_401.html'), 401
