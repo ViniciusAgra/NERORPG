@@ -6,11 +6,22 @@ from io import BytesIO
 import sqlite3
 import os
 from functools import wraps
+import uuid
+from werkzeug.utils import secure_filename
+import random
+import string
+from datetime import datetime
 
-app = Flask(__name__, static_folder='static', template_folder='pages')
+app = Flask(
+    __name__, 
+    static_folder='static', 
+    template_folder='pages',
+)
 app.secret_key = os.urandom(24)
 
-DB_PATH = os.path.join('data', 'users.db')
+DB_PATH = os.path.join('data', 'main.db')
+# Limite de upload de arquivos para 1GB
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 1 GB
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -69,10 +80,98 @@ def inicio():
 def sobre():
     return render_template('sobre.html')
 
+def gerar_codigo_unico():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    while True:
+        letras = ''.join(random.choices(string.ascii_uppercase, k=3))
+        numeros = ''.join(random.choices(string.digits, k=3))
+        codigo = f"{letras}-{numeros}"
+        cursor.execute('SELECT 1 FROM consultas WHERE codigo_de_consulta = ?', (codigo,))
+        if cursor.fetchone() is None:
+            conn.close()
+            return codigo
+
 @app.route('/inicio/identificacao')
 @login_required
 def identificacao():
-    return render_template('identificacao.html')
+    patente = session.get("patente", "")
+    return render_template("identificacao.html", patente=patente)
+
+@app.route('/inicio/identificacao/novo_ser')
+@login_required
+@patente_minima(1)
+def novoser():
+    return render_template('novo_ser.html')
+
+@app.route('/inicio/identificacao/novo_doc', methods=['GET', 'POST'])
+@login_required
+@patente_minima(1)
+def novodoc():
+    if request.method == 'POST':
+        if 'arquivo' not in request.files:
+            flash('Nenhum arquivo enviado.')
+            return redirect(request.url)
+
+        arquivo = request.files['arquivo']
+        if arquivo.filename == '':
+            flash('Nenhum arquivo selecionado.')
+            return redirect(request.url)
+
+        if arquivo:
+            filename = secure_filename(arquivo.filename)
+            uuid_arquivo = str(uuid.uuid4())
+            nome_armazenado = f"{uuid_arquivo}_{filename}"
+            
+            # Definir pasta destino e caminho completo
+            pasta_destino = os.path.join(app.instance_path, 'uploads', 'documentos')
+            os.makedirs(pasta_destino, exist_ok=True)
+            caminho_completo = os.path.join(pasta_destino, nome_armazenado)
+
+            usuario_id = session.get('usuario_id')
+            if not usuario_id:
+                flash('Usuário não identificado na sessão.')
+                return redirect(url_for('login'))
+
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+
+                # Inserir no banco ANTES de salvar o arquivo
+                cursor.execute('''
+                    INSERT INTO uploads (uuid, user_id, nome_original, nome_armazenado, caminho)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (uuid_arquivo, usuario_id, filename, nome_armazenado, caminho_completo))
+
+                codigo = gerar_codigo_unico()
+                confidencial = 1 if request.form.get('confidencial') == 'on' else 0
+
+                cursor.execute('''
+                    INSERT INTO consultas (codigo_de_consulta, usuario_editor, link_arquivo, confidencial)
+                    VALUES (?, ?, ?, ?)
+                ''', (codigo, usuario_id, uuid_arquivo, confidencial))
+
+                conn.commit()
+
+                # Só salva o arquivo no disco após confirmar o commit no banco
+                arquivo.save(caminho_completo)
+
+                flash(f'Arquivo enviado com sucesso! Código de consulta: {codigo}')
+                return redirect(url_for('novodoc', codigo=codigo))
+
+            except sqlite3.IntegrityError as e:
+                conn.rollback()
+                flash(f'Erro de integridade no banco: {e}')
+                print("Erro de integridade:", e)
+            except Exception as e:
+                conn.rollback()
+                flash(f'Erro inesperado: {e}')
+                print("Erro inesperado:", e)
+            finally:
+                conn.close()
+
+    return render_template('novo_doc.html')
 
 @app.route('/inicio/atribuicoes')
 @login_required
@@ -239,11 +338,6 @@ def gerar_relatorio_usuarios():
         as_attachment=True,
         download_name="Relatório Agentes NERO.pdf"
     )
-
-@app.route('/inicio/secret')
-@login_required
-def secret():
-    return render_template('secret.html')
 
 @app.route('/secret')
 def secret():

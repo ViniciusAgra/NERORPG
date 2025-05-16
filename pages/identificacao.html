@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N.E.R.O | {{nome}}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/inicio.css') }}">
-    <script defer src="{{ url_for('static', filename='scripts/inicio.js') }}"></script>
+    <title>N.E.R.O | Identificação</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/identificacao.css') }}">
+    <script defer src="{{ url_for('static', filename='scripts/identificacao.js') }}"></script>
 </head>
 <body>
     <header>
@@ -25,29 +25,20 @@
             <img src="{{ url_for('static', filename='img/usericon.png') }}" alt="Perfil" class="user-icon">
         </a>
     </header>
+
     <main>
         <div class="background-overlay"></div>
-        <h1>
-            <span class="linha1">Bem Vindo Agente</span><br>
-            <span class="linha2">{{nome}}</span>
-        </h1>
+        <div class="search-container">
+            <h1>Consulta Geral Do Sistema</h1>
+            <input type="text" id="searchInput" placeholder="Digite o Código de Dados">
+            <button id="searchButton">Buscar no Sistema</button>
+            {% if patente in ["ADM Geral", "Diretor(a)"] %}
+                <div class="admin-buttons">
+                    <a href="{{ url_for('novodoc') }}" class="btn-admin">Cadastrar Ser</a>
+                    <a href="{{ url_for('novodoc') }}" class="btn-admin">Cadastrar Documento</a>
+                </div>
+            {% endif %}
+        </div>
     </main>
-
-    {% if tocar_audio %}
-    <audio id="sucessoAudio" autoplay>
-        <source src="{{ url_for('static', filename='audio/BemVindoAgente.mp3') }}" type="audio/mpeg">
-        Seu navegador não suporta áudio.
-    </audio>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const audio = document.getElementById('sucessoAudio');
-            if (audio) {
-                audio.play().catch(() => {
-                    document.addEventListener('click', () => audio.play(), { once: true });
-                });
-            }
-        });
-    </script>
-    {% endif %}
 </body>
 </html>
